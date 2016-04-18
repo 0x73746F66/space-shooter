@@ -1,0 +1,21 @@
+{
+  "player": "toon",
+  "toon": {
+    "effect_time": -1,
+    "multiplier": 0
+  },
+  "obstacles": [
+    {
+      "id": "rock",
+      "title": "Rock"
+    },
+    {
+      "id": "paper",
+      "title": "Paper"
+    },
+    {
+      "id": "scisors",
+      "title": "Scisors"
+    }
+  ]
+}
