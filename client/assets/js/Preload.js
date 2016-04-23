@@ -1,17 +1,20 @@
-//loading the game assets
-SideScroller.Preload = function(){};
-SideScroller.Preload.prototype = {
+PhaserGame.Preload = function(){};
+PhaserGame.Preload.prototype = {
   preload: function() {
-    //show loading screen
-    this.preloadBar = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'preloadbar');
+    //show logo in loading screen
+    this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
+    this.splash.anchor.setTo(0.5);
+ 
+    this.preloadBar = this.add.sprite(this.game.world.centerX, this.game.world.centerY + 128, 'preloadbar');
     this.preloadBar.anchor.setTo(0.5);
-    this.preloadBar.scale.setTo(3);
+ 
     this.load.setPreloadSprite(this.preloadBar);
+ 
     //load game assets
     this.load.json('game_data', 'game_data.json');
-    this.load.image('toon', '/assets/images/toon.png');
+    this.load.image('clouds', '/assets/images/cloud-tile.png');
   },
   create: function() {
-    this.state.start('Game');
+    this.state.start('MainMenu');
   }
 };

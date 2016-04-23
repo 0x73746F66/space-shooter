@@ -1,8 +1,8 @@
 {
   "version": "1.0.0",
-  "name": "Ludum Dare 35 - Christopher Langton",
+  "name": "canvas game - Christopher Langton",
   "launch_path": "/index.html",
-  "description": "Ludum Dare Game Jam by Chris Langton.",
+  "description": "canvas game by Chris Langton.",
   "icons": {
 //    "60": "/img/touch/touch-icon-60x60.png",
 //    "128": "/img/touch/touch-icon-128x128.png"
@@ -19,8 +19,8 @@
   },
   "locales": {
     "en": {
-      "name": "Ludum Dare 35 - Christopher Langton",
-      "description": "Ludum Dare Game Jam by Chris Langton.",
+      "name": "canvas game - Christopher Langton",
+      "description": "canvas game by Chris Langton.",
     }
   }
 }
