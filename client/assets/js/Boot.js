@@ -3,11 +3,10 @@ PhaserGame.Boot = function(){};
 PhaserGame.Boot.prototype = {
   preload: function() {
     //assets we'll use in the loading screen
-    this.load.image('logo', 'assets/images/logo.png');
-    this.load.image('preloadbar', 'assets/images/preloader-bar.png');
+    this.load.image('logo', 'assets/images/rocket.png');
   },
   create: function() {
-    //loading screen will have a white background
+    //loading screen will have a black background
     this.game.stage.backgroundColor = '#000000';
     //scaling options
     this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;

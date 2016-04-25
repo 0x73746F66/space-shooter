@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns1="http://sozi.baierouge.fr" xmlns:cc="http://creativecommons.org/ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:dc="http://purl.org/dc/elements/1.1/" id="svg2" viewBox="0 0 200 200" version="1.1" inkscape:version="0.91 r13725">
+  <g id="layer1" transform="translate(0 -852.36)">
+    <g id="rocket" transform="matrix(.19363 0 0 .19363 210.42 838.61)">
+      <path id="path3004" style="fill:#008033" d="m-982.87 379.03c123.69-78.706 263.38-80.528 312.02-4.0838 23.386 36.752 21.473 84.9-0.56988 133.74-35.283-71.054-150.87-110.33-278.66-89.595-47.797 7.7548-91.296 22.952-127.63 43.027 24.784-30.272 56.84-58.911 94.843-83.093z"/>
+      <path id="path3009" style="fill:#008033" d="m-975.82 825.95c130.01 67.765 269.33 57.555 311.21-22.793 20.135-38.629 14.084-86.434-12.082-133.2-29.035 73.828-140.81 122.91-269.91 113.25-48.287-3.6111-92.933-15.007-130.86-31.88 27.298 28.026 61.701 53.799 101.64 74.619z"/>
+      <path id="rect2989" style="fill:#441650" d="m-223.8 462.51c129.6 82.773 142.76 140.07 142.76 140.07s29.329 27.709-105.56 111.83c-113.36 70.691-253.44 103.62-387.04 104.08-98.309 0.33474-213.25-7.792-285.33-74.646-38.109-35.347-51.075-95.49-50.686-147.47 0.38957-51.976 13.943-112.27 52.89-146.69 77.06-68.105 198.06-69.027 300.9-68.18 113.93 0.93808 236.04 19.685 332.06 81.012z"/>
+      <path id="path2992" style="fill:#eed7f4" d="m-263.09 526.18a62.147 62.147 0 1 1 -124.29 0 62.147 62.147 0 1 1 124.29 0z" transform="matrix(.53685 .84368 -.84368 .53685 273.97 572.95)"/>
+      <path id="path2996" style="fill:#eed7f4" d="m-263.09 526.18a62.147 62.147 0 1 1 -124.29 0 62.147 62.147 0 1 1 124.29 0z" transform="matrix(.53685 .84368 -.84368 .53685 108.23 572.95)"/>
+      <path id="path2998" style="fill:#eed7f4" d="m-263.09 526.18a62.147 62.147 0 1 1 -124.29 0 62.147 62.147 0 1 1 124.29 0z" transform="matrix(.53685 .84368 -.84368 .53685 -57.507 572.95)"/>
+      <path id="path3002" style="fill:#221c24" d="m-909.29 603.01c-1.3228 65.494 20.818 132.87 85.61 168.37 146.99 73.195 313.81 62.069 497.9 6.6972 97.438-30.33 178.65-90.577 187.23-99.198-725.12 132.15-445.34 33.883-770.74-75.87z"/>
+      <path id="path3011" style="fill:#1c241c" d="m-979.91 822.58c55.601 31.376 149.85 49.497 210.52 40.479 29.169-4.3355 45.266-14.154 47.938-26.669-49.647 9.6444-142.37 2.7602-221.71-17.609-29.673-7.6185-53.737-16.171-71.173-24.782 5.9008 9.1709 17.333 18.941 34.416 28.581z"/>
+      <path id="path3013" style="fill:#8d5fd3" d="m-92.054 580.09c-12.85-20.279-40.112-53.137-96.853-93.94l9.6519 223.62c126.43-80.492 98.225-107.17 98.225-107.17s-1.8765-8.0694-11.024-22.506z"/>
+    </g>
+  </g>
+  <metadata>
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
+        <dc:publisher>
+          <cc:Agent rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+      </cc:Work>
+      <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

@@ -1,4 +1,4 @@
-var PhaserGame = {};
+var PhaserGame = {cacheReady: false};
 // Check if a new cache is available on page load.
 window.addEventListener('load', function(e) {
   window.applicationCache.addEventListener('updateready', function(e) {
@@ -9,6 +9,10 @@ window.addEventListener('load', function(e) {
   }, false);
   window.applicationCache.addEventListener('noupdate', function(e){
     warn("Loaded from AppCache\nForget to update .appcache file version?");
+    PhaserGame.cacheReady = true;
+  }, false);
+  window.applicationCache.addEventListener('cached', function(e){
+    PhaserGame.cacheReady = true;
   }, false);
 }, false);
 document.addEventListener("DOMContentLoaded", function(e) {

@@ -1,21 +1,57 @@
 {
-  "player": "toon",
-  "toon": {
-    "effect_time": -1,
-    "multiplier": 0
+  "player": "fighter1",
+  "fighter1": {
+    "multiplier": 1,
+    "move": 150,
+    "width": 50,
+    "height": 48
   },
-  "obstacles": [
-    {
-      "id": "rock",
-      "title": "Rock"
-    },
-    {
-      "id": "paper",
-      "title": "Paper"
-    },
-    {
-      "id": "scisors",
-      "title": "Scisors"
-    }
-  ]
+  "fighter2": {
+    "multiplier": 1.5,
+    "move": 150,
+    "width": 50,
+    "height": 50
+  },
+  "fighter3": {
+    "multiplier": 2,
+    "move": 150,
+    "width": 50,
+    "height": 47
+  },
+  "obstacles": ["enemy1","enemy2","enemy3","enemy4","enemy5"],
+  "enemy1": {
+    "velocity": 30,
+    "worth": 1,
+    "damage": 50
+  },
+  "enemy2": {
+    "velocity": 45,
+    "worth": 2,
+    "damage": 100
+  },
+  "enemy3": {
+    "velocity": 70,
+    "worth": 4,
+    "damage": 100
+  },
+  "enemy4": {
+    "velocity": 90,
+    "worth": 7,
+    "damage": 150
+  },
+  "enemy5": {
+    "velocity": 120,
+    "worth": 10,
+    "damage": 150
+  },
+  "boss1": {
+    "velocity": 0,
+    "worth": 1,
+    "damage": 250
+  },
+  "boss2": {
+    "velocity": 0,
+    "worth": 1,
+    "damage": 450
+  }
 }

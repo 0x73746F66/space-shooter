@@ -4,7 +4,7 @@ PhaserGame.MainMenu.prototype = {
     this.highestScore = 96240385; //fetch from db
   },
   create: function() {
-    this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'clouds');
+    this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'space');
     this.background.autoScroll(-20, 0);
  
     //start game text

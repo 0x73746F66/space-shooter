@@ -11,8 +11,16 @@ assets/js/Preload.js
 assets/js/MainMenu.js
 assets/js/Game.js
 assets/js/main.js
-assets/images/cloud-tile.png
-assets/images/preloader-bar.png
+assets/images/rocket.png
+assets/images/space-tile.jpg
+assets/images/healthbar.png
+assets/images/enemy_1.png
+assets/images/enemy_2.png
+assets/images/enemy_3.png
+assets/images/enemy_4.png
+assets/images/enemy_5.png
+assets/images/boss_1.png
+assets/images/boss_2.png
 
 NETWORK:
 *
