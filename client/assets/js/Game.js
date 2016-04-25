@@ -44,11 +44,12 @@ PhaserGame.Game.prototype = {
     this.shield = this.playerData.shield;
     this.healthbar = this.game.add.sprite(this.game.width-400-10,10,'healthbar');
     this.healthbar.cropEnabled = true;
-    this.healthbar.crop.width = this.shield;
+    var barWidth = 400;
+    var barHeight = 30;
+    var cropRect = new Phaser.Rectangle(0, 0, barWidth, barHeight);
+    this.healthbar.crop(cropRect);
   },
   playerMove: function(dir) {
-    console.log(dir,this.player.body.x,this.player.body.y);
-    return;
     var w = this.playerData.width;
     var h = this.playerData.height;
     if (this.player.body.x <= (this.game.width-w) && dir === 'R') {
@@ -76,11 +77,12 @@ PhaserGame.Game.prototype = {
   },
   refreshStats: function() {
     var maxHealth = this.playerData.shield,
-        diff = (this.shield/maxHealth)/100,
+        diff = this.shield/maxHealth,
         barWidth = 400,
-        barRemaining = barWidth - (barWidth * diff);
+        barHeight = 30,
+        barRemaining = (barWidth - (barWidth - (barWidth * diff))).toFixed(0);
     this.pointsText.text = this.points;
-    cropRect = new Phaser.Rectangle(0, 0, barRemaining, 30);
+    var cropRect = new Phaser.Rectangle(0, 0, barRemaining, barHeight);
     this.healthbar.crop(cropRect);
   },
   playerDied: function(txt) {
@@ -98,6 +100,10 @@ PhaserGame.Game.prototype = {
     if (this.gameOver) {
       return;
     }
+    if (this.shield <= 0) {
+      this.gameOver = true;
+      this.playerDied('shield depleated');
+    }
     var w = this.playerData.width;
     var h = this.playerData.height;
     // this.game.world.bringToTop(this.enemies);
@@ -107,24 +113,25 @@ PhaserGame.Game.prototype = {
     this.shield -= 1;
     this.points += 1;
     this.refreshStats();
-    // if (this.cursors.up.isDown) {
-    //   this.playerMove('U');
-    // } else if (this.cursors.down.isDown) {
-    //   this.playerMove('D');
-    // } else if (this.cursors.right.isDown) {
-    //   this.playerMove('R');
-    // } else if (this.cursors.left.isDown) {
-    //   this.playerMove('L');
-    // }
-    // if (this.player.body.x = (this.game.width-w)) {
-    //   this.player.body.velocity.setTo(0,0);
-    // } else if (this.player.body.x = 0) {
-    //   this.player.body.velocity.setTo(0,0);
-    // } else if (this.player.body.y = (this.game.height-h)) {
-    //   this.player.body.velocity.setTo(0,0);
-    // } else if (this.player.body.y = 0) {
-    //   this.player.body.velocity.setTo(0,0);
-    // }
+    if (this.cursors.up.isDown) {
+      this.playerMove('U');
+    } else if (this.cursors.down.isDown) {
+      this.playerMove('D');
+    } else if (this.cursors.right.isDown) {
+      this.playerMove('R');
+    } else if (this.cursors.left.isDown) {
+      this.playerMove('L');
+    }
+    
+    if (this.player.body.x === (this.game.width-w)) {
+      this.player.body.velocity.setTo(0,0);
+    } else if (this.player.body.x === 0) {
+      this.player.body.velocity.setTo(0,0);
+    } else if (this.player.body.y === (this.game.height-h)) {
+      this.player.body.velocity.setTo(0,0);
+    } else if (this.player.body.y === 0) {
+      this.player.body.velocity.setTo(0,0);
+    }
     // if (this.game.rnd.integerInRange(0, 1000) >= 995) {
     //   var key = this.cache.getJSON('game_data').obstacles[this.game.rnd.integerInRange(0, this.cache.getJSON('game_data').obstacles.length-1)]
     //   var data = this.cache.getJSON('game_data')[key];

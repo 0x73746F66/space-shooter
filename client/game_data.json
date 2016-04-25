@@ -1,18 +1,21 @@
 {
   "player": "fighter1",
   "fighter1": {
+    "shield": 550,
     "multiplier": 1,
     "move": 150,
     "width": 50,
     "height": 48
   },
   "fighter2": {
+    "shield": 1900,
     "multiplier": 1.5,
     "move": 150,
     "width": 50,
     "height": 50
   },
   "fighter3": {
+    "shield": 5000,
     "multiplier": 2,
     "move": 150,
     "width": 50,
