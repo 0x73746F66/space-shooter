@@ -81,7 +81,7 @@ PhaserGame.Game.prototype = {
         barRemaining = barWidth - (barWidth * diff);
     this.pointsText.text = this.points;
     cropRect = new Phaser.Rectangle(0, 0, barRemaining, 30);
-    this.healthbar.crop(cropRect));
+    this.healthbar.crop(cropRect);
   },
   playerDied: function(txt) {
     this.gameOver = true;
