@@ -25,27 +25,37 @@
   "enemy1": {
     "velocity": 30,
     "worth": 1,
-    "damage": 50
+    "damage": 50,
+    "width": 40,
+    "height": 37
   },
   "enemy2": {
     "velocity": 45,
     "worth": 2,
-    "damage": 100
+    "damage": 100,
+    "width": 53,
+    "height": 30
   },
   "enemy3": {
     "velocity": 70,
     "worth": 4,
-    "damage": 100
+    "damage": 100,
+    "width": 60,
+    "height": 25
   },
   "enemy4": {
     "velocity": 90,
     "worth": 7,
-    "damage": 150
+    "damage": 150,
+    "width": 50,
+    "height": 25
   },
   "enemy5": {
     "velocity": 120,
     "worth": 10,
-    "damage": 150
+    "damage": 150,
+    "width": 42,
+    "height": 25
   },
   "boss1": {
     "velocity": 0,

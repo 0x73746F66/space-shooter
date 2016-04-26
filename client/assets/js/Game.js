@@ -15,11 +15,14 @@ PhaserGame.Game.prototype = {
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
     this.createPlayer(playerId);
+    //this.generateObstacles();
+    this.generateEnemies();
     //stats
     var t1 = this.game.add.text(10, 20, "Points:", { font: "20px Arial", fill: "#ff0"});
     t1.fixedToCamera = true;
     this.pointsText = this.game.add.text(80, 18, "-", { font: "26px Arial", fill: "#00ff00"});
     this.pointsText.fixedToCamera = true;
+    
   },
   createPlayer: function(playerId) {
     this.playerData = this.cache.getJSON('game_data')[playerId];
@@ -48,6 +51,45 @@ PhaserGame.Game.prototype = {
     var barHeight = 30;
     var cropRect = new Phaser.Rectangle(0, 0, barWidth, barHeight);
     this.healthbar.crop(cropRect);
+  },
+  generateEnemies: function() {
+    var num1 = this.game.rnd.integerInRange(2, 4);
+    var num2 = this.game.rnd.integerInRange(0, 2);
+    var enemy1, enemy1;
+    var enemy1Data = this.cache.getJSON('game_data').enemy1;
+    var enemy2Data = this.cache.getJSON('game_data').enemy2;
+    var x, i;
+
+    this.enemies = this.game.add.group();
+    //enable physics in them
+    this.enemies.enableBody = true;
+    
+    for (i = 0; i < num1; i++) {
+      x = (this.game.width) + this.game.rnd.integerInRange(0, this.game.width);
+      y = this.game.rnd.integerInRange(0, this.game.height-enemy1Data.height);
+      enemy1 = this.enemies.create(x, y, 'enemy1');
+ 
+      //physics properties
+      enemy1.body.velocity.x = parseInt('-'+enemy1Data.velocity);
+      
+      enemy1.body.immovable = true;
+      enemy1.body.collideWorldBounds = false;
+      enemy1.worth = enemy1Data.worth;
+      enemy1.damange = enemy1Data.damage;
+    }
+    for (i = 0; i < num1; i++) {
+      x = (this.game.width) + this.game.rnd.integerInRange(0, this.game.width);
+      y = this.game.rnd.integerInRange(0, this.game.height-enemy2Data.height);
+      enemy2 = this.enemies.create(x, y, 'enemy2');
+ 
+      //physics properties
+      enemy2.body.velocity.x = parseInt('-'+enemy1Data.velocity);
+      
+      enemy2.body.immovable = true;
+      enemy2.body.collideWorldBounds = false;
+      enemy2.worth = enemy1Data.worth;
+      enemy2.damange = enemy1Data.damage;
+    }
   },
   playerHit: function(player, obstacle) {
     if (this.playerVisible && this.shield > 0) {
@@ -95,8 +137,6 @@ PhaserGame.Game.prototype = {
     var isOOBL = this.player.body.x <= 0;
     var isOOB = (isOOBU || isOOBR || isOOBD || isOOBL);
     
-    debug('isOOBU',isOOBU,'xBound',xBound,'game.width',this.game.width,'player.x',this.player.body.x,'spriteWidth',this.playerData.width);
-    //debug('isOOB',isOOB,'isOOBU',isOOBU,'isOOBD',isOOBD,'isOOBL',isOOBL,'isOOBR',isOOBR);
     if (isMoving && isOOB) {
       this.player.body.velocity.setTo(0,0);
     }
@@ -120,14 +160,11 @@ PhaserGame.Game.prototype = {
       this.playerDied('shield depleated');
       return;
     }
-    // this.game.world.bringToTop(this.enemies);
-    // this.game.physics.arcade.overlap(this.player, this.enemies, this.playerHit, null, this);
-
-    // this.enemies.filter(function(v) { return v.body.x < -200; }).callAll('destroy');
-    this.shield -= 1;
-    this.points += 1;
-    this.refreshStats();
     this.playerMove();
+    this.game.world.bringToTop(this.enemies);
+    this.game.physics.arcade.overlap(this.player, this.enemies, this.playerHit, null, this);
+
+    this.enemies.filter(function(v) { return v.body.x < -70; }).callAll('destroy');
 
     // if (this.game.rnd.integerInRange(0, 1000) >= 995) {
     //   var key = this.cache.getJSON('game_data').obstacles[this.game.rnd.integerInRange(0, this.cache.getJSON('game_data').obstacles.length-1)]
@@ -139,7 +176,7 @@ PhaserGame.Game.prototype = {
     //   item.body.immovable = true;
     //   item.body.collideWorldBounds = false;
     //   item.worth = data.points;
-    // }    
+    // }
   },
   render: function() {
     this.game.debug.text(this.game.time.fps || '--', 20, 70, "#00ff00", "40px Courier");  
