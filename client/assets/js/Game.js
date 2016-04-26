@@ -83,24 +83,31 @@ PhaserGame.Game.prototype = {
   togglePause: function() {
     this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
   },
-  playerMove: function(dir) {
-    var w = this.playerData.width;
-    var h = this.playerData.height;
-    if (this.player.body.x >= 0 && dir === 'R') {
-      this.player.body.velocity.x = this.playerData.move;
-    } else if (this.player.body.x <= (this.game.width-w) && dir === "L") {
-      this.player.body.velocity.x = parseInt('-' + this.playerData.move);
-    } else if (this.player.body.y >= 0 && dir === 'U') {
-      this.player.body.velocity.y = parseInt('-' + this.playerData.move);
-    } else if (this.player.body.y <= (this.game.height-h) && dir === "D") {
-      this.player.body.velocity.y = this.playerData.move;
-    } else {
-      this.stopPlayer();
-    }
-  },
-  stopPlayer: function() {
-    if ( !(Phaser.Point.equals(this.player.body.velocity,new Phaser.Point(0,0))) ) {
+  playerMove: function() {
+    var xBound = [0,this.game.width-this.playerData.width];
+    var xVisible = [0,this.game.width+this.playerData.width];
+    var yBound = [0,this.game.height-this.playerData.height];
+    var yVisible = [0,this.game.height+this.playerData.height];
+    var isMoving = !(Phaser.Point.equals(this.player.body.velocity,new Phaser.Point(0,0)));
+    var isOOBU = this.player.body.y <= 0;
+    var isOOBR = this.player.body.x >= xBound[1];
+    var isOOBD = this.player.body.y >= yBound[1];
+    var isOOBL = this.player.body.x <= 0;
+    var isOOB = (isOOBU || isOOBR || isOOBD || isOOBL);
+    
+    debug('isOOBU',isOOBU,'xBound',xBound,'game.width',this.game.width,'player.x',this.player.body.x,'spriteWidth',this.playerData.width);
+    //debug('isOOB',isOOB,'isOOBU',isOOBU,'isOOBD',isOOBD,'isOOBL',isOOBL,'isOOBR',isOOBR);
+    if (isMoving && isOOB) {
       this.player.body.velocity.setTo(0,0);
+    }
+    if (this.cursors.right.isDown && (isOOBL || !isOOBR)) {
+      this.player.body.velocity.x = this.playerData.move;
+    } else if (this.cursors.left.isDown && (isOOBR || !isOOBL)) {
+      this.player.body.velocity.x = parseInt('-' + this.playerData.move);
+    } else if (this.cursors.up.isDown && (isOOBD || !isOOBU)) {
+      this.player.body.velocity.y = parseInt('-' + this.playerData.move);
+    } else if (this.cursors.down.isDown && (isOOBU || !isOOBD)) {
+      this.player.body.velocity.y = this.playerData.move;
     }
   },
   update: function() {
@@ -109,12 +116,10 @@ PhaserGame.Game.prototype = {
     }
     if (this.shield <= 0) {
       this.gameOver = true;
-      this.stopPlayer();
+      this.player.body.velocity.setTo(0,0);
       this.playerDied('shield depleated');
       return;
     }
-    var w = this.playerData.width;
-    var h = this.playerData.height;
     // this.game.world.bringToTop(this.enemies);
     // this.game.physics.arcade.overlap(this.player, this.enemies, this.playerHit, null, this);
 
@@ -122,26 +127,8 @@ PhaserGame.Game.prototype = {
     this.shield -= 1;
     this.points += 1;
     this.refreshStats();
-    if (this.player.body.x === (this.game.width-w)) {
-      this.stopPlayer();
-    } else if (this.player.body.x === 0) {
-      this.stopPlayer();
-    } else if (this.player.body.y === (this.game.height-h)) {
-      this.stopPlayer();
-    } else if (this.player.body.y === 0) {
-      this.stopPlayer();
-    }
-  
-    if (this.cursors.up.isDown) {
-      this.playerMove('U');
-    } else if (this.cursors.down.isDown) {
-      this.playerMove('D');
-    } else if (this.cursors.right.isDown) {
-      this.playerMove('R');
-    } else if (this.cursors.left.isDown) {
-      this.playerMove('L');
-    }
-    
+    this.playerMove();
+
     // if (this.game.rnd.integerInRange(0, 1000) >= 995) {
     //   var key = this.cache.getJSON('game_data').obstacles[this.game.rnd.integerInRange(0, this.cache.getJSON('game_data').obstacles.length-1)]
     //   var data = this.cache.getJSON('game_data')[key];
