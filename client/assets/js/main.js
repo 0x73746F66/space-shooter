@@ -3,8 +3,7 @@ var PhaserGame = {cacheReady: false};
 window.addEventListener('load', function(e) {
   window.applicationCache.addEventListener('updateready', function(e) {
     if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-      info("New version available.\nReloading AppCache");
-      window.location.reload();
+      info("New version available.\nReload AppCache");
     }
   }, false);
   window.applicationCache.addEventListener('noupdate', function(e){

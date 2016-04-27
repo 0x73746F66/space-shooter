@@ -3,6 +3,8 @@ CACHE MANIFEST
 
 CACHE:
 index.html
+game_data.json
+physics.json
 assets/css/style.css
 assets/js/global.js
 assets/js/phaser.min.js

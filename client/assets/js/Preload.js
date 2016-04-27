@@ -7,6 +7,7 @@ PhaserGame.Preload.prototype = {
 
     //load game assets
     this.load.json('game_data', 'game_data.json');
+    this.load.physics('physics_data', 'physics.json');
     this.load.image('space', '/assets/images/space-tile.jpg');
     this.load.image('healthbar', '/assets/images/healthbar.png');
     this.load.image('fighter1', '/assets/images/fighter_1.png');

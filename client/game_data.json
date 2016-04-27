@@ -21,9 +21,9 @@
     "width": 50,
     "height": 47
   },
-  "obstacles": ["enemy1","enemy2","enemy3","enemy4","enemy5"],
+  "enemies": ["enemy1","enemy1"],
   "enemy1": {
-    "velocity": 30,
+    "velocity": 80,
     "worth": 1,
     "damage": 50,
     "width": 40,

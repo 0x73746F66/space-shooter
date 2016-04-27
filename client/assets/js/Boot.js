@@ -16,8 +16,10 @@ PhaserGame.Boot.prototype = {
     //screen size will be set automatically
     //this.scale.setGameSize();    //screen size will be set automatically
 
-    //physics system
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    //this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    //	Enable p2 physics
+  	this.game.physics.startSystem(Phaser.Physics.P2JS);
+
     this.state.start('Preload');
   }
 };
