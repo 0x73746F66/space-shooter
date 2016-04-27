@@ -1,8 +1,17 @@
 CACHE MANIFEST
-# v0.0.1  //change this value to force a browser update
+# v0.0.2 //change this value if nothing else to force a browser update
 
 CACHE:
 index.html
+assets/images/android-icon-36x36.png
+assets/images/android-icon-48x48.png
+assets/images/android-icon-72x72.png
+assets/images/android-icon-96x96.png
+assets/images/android-icon-144x144.png
+assets/images/android-icon-192x192.png
+manifest.json
+manifest.webapp
+browserconfig.xml
 game_data.json
 physics.json
 assets/css/style.css
@@ -16,6 +25,9 @@ assets/js/main.js
 assets/images/rocket.png
 assets/images/space-tile.jpg
 assets/images/healthbar.png
+assets/images/fighter_1.png
+assets/images/fighter_2.png
+assets/images/fighter_3.png
 assets/images/enemy_1.png
 assets/images/enemy_2.png
 assets/images/enemy_3.png

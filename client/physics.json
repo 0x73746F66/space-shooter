@@ -22,6 +22,29 @@
       ]
     }
   ],
+  "enemy2": [
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits": 65535
+      },
+      "shape": [
+          50,25,
+          17,48,
+          17,18,
+          9,26,
+          0,26,
+          0,22,
+          9,22,
+          17,30,
+          17,0,
+          50,25
+      ]
+    }
+  ],
   "enemy1": [
     {
       "density": 2,

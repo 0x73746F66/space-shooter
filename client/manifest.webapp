@@ -4,8 +4,8 @@
   "launch_path": "/index.html",
   "description": "canvas game by Chris Langton.",
   "icons": {
-//    "60": "/img/touch/touch-icon-60x60.png",
-//    "128": "/img/touch/touch-icon-128x128.png"
+    "72": "/assets/images/android-icon-72x72.png",
+    "144": "/assets/images/android-icon-144x144.png"
   },
   "developer": {
     "name": "Chris Langton",
