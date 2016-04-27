@@ -55,10 +55,10 @@ PhaserGame.Game.prototype = {
   generateEnemies: function() {
     var num1 = this.game.rnd.integerInRange(2, 4);
     var num2 = this.game.rnd.integerInRange(0, 2);
-    var enemy1, enemy1;
+    var enemy1, enemy2;
     var enemy1Data = this.cache.getJSON('game_data').enemy1;
     var enemy2Data = this.cache.getJSON('game_data').enemy2;
-    var x, i;
+    var x, y, i;
 
     this.enemies = this.game.add.group();
     //enable physics in them
@@ -77,7 +77,7 @@ PhaserGame.Game.prototype = {
       enemy1.worth = enemy1Data.worth;
       enemy1.damange = enemy1Data.damage;
     }
-    for (i = 0; i < num1; i++) {
+    for (i = 0; i < num2; i++) {
       x = (this.game.width) + this.game.rnd.integerInRange(0, this.game.width);
       y = this.game.rnd.integerInRange(0, this.game.height-enemy2Data.height);
       enemy2 = this.enemies.create(x, y, 'enemy2');
@@ -136,18 +136,23 @@ PhaserGame.Game.prototype = {
     var isOOBD = this.player.body.y >= yBound[1];
     var isOOBL = this.player.body.x <= 0;
     var isOOB = (isOOBU || isOOBR || isOOBD || isOOBL);
+    var x = 0, y = 0;
     
     if (isMoving && isOOB) {
       this.player.body.velocity.setTo(0,0);
     }
     if (this.cursors.right.isDown && (isOOBL || !isOOBR)) {
-      this.player.body.velocity.x = this.playerData.move;
+      x = this.playerData.move;
     } else if (this.cursors.left.isDown && (isOOBR || !isOOBL)) {
-      this.player.body.velocity.x = parseInt('-' + this.playerData.move);
-    } else if (this.cursors.up.isDown && (isOOBD || !isOOBU)) {
-      this.player.body.velocity.y = parseInt('-' + this.playerData.move);
+      x = parseInt('-' + this.playerData.move);
+    }
+    if (this.cursors.up.isDown && (isOOBD || !isOOBU)) {
+      y = parseInt('-' + this.playerData.move);
     } else if (this.cursors.down.isDown && (isOOBU || !isOOBD)) {
-      this.player.body.velocity.y = this.playerData.move;
+      y = this.playerData.move;
+    }
+    if (x !== 0 || y !== 0) {
+      this.player.body.velocity.setTo(x, y);
     }
   },
   update: function() {
