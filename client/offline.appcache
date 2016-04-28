@@ -9,6 +9,7 @@ assets/images/android-icon-72x72.png
 assets/images/android-icon-96x96.png
 assets/images/android-icon-144x144.png
 assets/images/android-icon-192x192.png
+favicon.ico
 manifest.json
 manifest.webapp
 browserconfig.xml
@@ -26,15 +27,20 @@ assets/images/rocket.png
 assets/images/space-tile.jpg
 assets/images/healthbar.png
 assets/images/fighter_1.png
-assets/images/fighter_2.png
-assets/images/fighter_3.png
+#assets/images/fighter_2.png
+#assets/images/fighter_3.png
 assets/images/enemy_1.png
 assets/images/enemy_2.png
-assets/images/enemy_3.png
-assets/images/enemy_4.png
-assets/images/enemy_5.png
-assets/images/boss_1.png
-assets/images/boss_2.png
+#assets/images/enemy_3.png
+#assets/images/enemy_4.png
+#assets/images/enemy_5.png
+#assets/images/boss_1.png
+#assets/images/boss_2.png
+assets/images/bullet_1.png
+#assets/images/bullet_2.png
+#assets/images/missile_1.png
+#assets/images/missile_2.png
+#assets/images/missile_3.png
 
 NETWORK:
 *

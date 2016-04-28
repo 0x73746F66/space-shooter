@@ -1,9 +1,10 @@
 {
   "player": "fighter1",
+  "weapon": "bullet1",
   "fighter1": {
     "shield": 550,
     "multiplier": 1,
-    "move": 150,
+    "move": 80,
     "width": 50,
     "height": 48
   },
@@ -21,18 +22,20 @@
     "width": 50,
     "height": 47
   },
-  "enemies": ["enemy1","enemy1"],
+  "enemies": ["enemy1","enemy2"],
   "enemy1": {
     "velocity": 80,
     "worth": 1,
-    "damage": 50,
+    "damage": 9999999,
+    "atk": 10,
     "width": 40,
     "height": 37
   },
   "enemy2": {
     "velocity": 45,
     "worth": 2,
-    "damage": 100,
+    "damage": 9999999,
+    "atk": 25,
     "width": 53,
     "height": 30
   },
@@ -66,5 +69,13 @@
     "velocity": 0,
     "worth": 1,
     "damage": 450
+  },
+  "bullet1": {
+    "velocity": 300,
+    "damage": 5
+  },
+  "missile1": {
+    "velocity": 200,
+    "damage": 5
   }
 }

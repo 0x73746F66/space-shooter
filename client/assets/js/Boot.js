@@ -19,7 +19,7 @@ PhaserGame.Boot.prototype = {
     //this.game.physics.startSystem(Phaser.Physics.ARCADE);
     //	Enable p2 physics
   	this.game.physics.startSystem(Phaser.Physics.P2JS);
-
+    this.game.physics.p2.restitution = 0;
     this.state.start('Preload');
   }
 };

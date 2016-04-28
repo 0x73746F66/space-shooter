@@ -2,12 +2,14 @@ PhaserGame.Game = function(){};
 PhaserGame.Game.prototype = {
   preload: function() {
     this.game.time.advancedTiming = true;
-    this.gameOver = false;
-    this.playerVisible = true;
+    this.GAME_OVER = false;
+    this.PLAYER_VISIBILE = true;
+    this.MAX_PROJECTILES = 20;
+    this.SHOT_DELAY = 300;
   },
   create: function() {
     var playerId = this.cache.getJSON('game_data').player;
-
+    var weaponId = this.cache.getJSON('game_data').weapon;
     this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'space');
     this.background.autoScroll(-20, 0);
 
@@ -27,6 +29,7 @@ PhaserGame.Game.prototype = {
     this.createPlayer(playerId);
     //this.generateObstacles();
     this.generateEnemies();
+    this.generateProjectiles();
 
     var t1 = this.game.add.text(10, 20, "Points:", { font: "20px Arial", fill: "#ff0"});
     t1.fixedToCamera = true;
@@ -34,12 +37,14 @@ PhaserGame.Game.prototype = {
     this.pointsText.fixedToCamera = true;
     
   },
-  createPlayer: function(playerId) {
+  createPlayer: function(playerId, weaponId) {
     this.playerData = this.cache.getJSON('game_data')[playerId];
+    this.weaponData = this.cache.getJSON('game_data')[weaponId];
+    this.currentWeapon = weaponId;
     var w = this.playerData.width,
         x = w,
         y = this.game.height/2;
-    if (this.gameOver) {
+    if (this.GAME_OVER) {
       this.player.destroy();
     } else if (typeof this.player !== 'undefined') {
       x = this.player.body.x || w;
@@ -55,8 +60,10 @@ PhaserGame.Game.prototype = {
     this.player.anchor.setTo(0.5, 0.5);
     this.player.body.setCollisionGroup(this.playerCollisionGroup);
     this.player.body.collides(this.enemyCollisionGroup, this.playerHit, this);
+    //this.player.body.setZeroDamping();
+    this.player.body.fixedRotation = true;
     this.game.world.bringToTop(this.player);
-    this.playerVisible = true;
+    this.PLAYER_VISIBILE = true;
     this.points = 0;
     this.shield = this.playerData.shield;
 
@@ -83,40 +90,84 @@ PhaserGame.Game.prototype = {
       y = this.game.rnd.integerInRange(0, this.game.height-enemy1Data.height);
       enemy1 = this.enemies.create(x, y, 'enemy1');
       enemy1.body.clearShapes();
-      enemy1.body.immovable = true;
       enemy1.body.setZeroDamping();
+      enemy1.body.fixedRotation = true;
       enemy1.body.loadPolygon('physics_data', 'enemy1');
-      enemy1.worth = enemy1Data.worth;
-      enemy1.damange = enemy1Data.damage;
       enemy1.body.setCollisionGroup(this.enemyCollisionGroup);
       enemy1.body.collides([this.playerCollisionGroup, this.enemyCollisionGroup]);
       enemy1.body.velocity.x = parseInt('-'+enemy1Data.velocity);
     }
-    // for (i = 0; i < num2; i++) {
-    //   x = (this.game.width) + this.game.rnd.integerInRange(0, this.game.width);
-    //   y = this.game.rnd.integerInRange(0, this.game.height-enemy2Data.height);
-    //   enemy2 = this.enemies.create(x, y, 'enemy2');
-    //   enemy2.body.velocity.x = parseInt('-'+enemy1Data.velocity);
-    //   enemy2.body.immovable = true;
-    //   enemy2.body.collideWorldBounds = false;
-    //   enemy2.body.setCollisionGroup(this.enemyCollisionGroup);
-    //   enemy2.worth = enemy1Data.worth;
-    //   enemy2.damange = enemy1Data.damage;
-    //   enemy2.body.collides(this.playerCollisionGroup, this.playerHit, this);
-    // }
+    for (i = 0; i < num2; i++) {
+      x = (this.game.width) + this.game.rnd.integerInRange(0, this.game.width);
+      y = this.game.rnd.integerInRange(0, this.game.height-enemy2Data.height);
+      enemy2 = this.enemies.create(x, y, 'enemy2');
+      enemy2.body.clearShapes();
+      enemy2.body.setZeroDamping();
+      enemy2.body.fixedRotation = true;
+      enemy2.body.loadPolygon('physics_data', 'enemy2');
+      enemy2.body.setCollisionGroup(this.enemyCollisionGroup);
+      enemy2.body.collides([this.playerCollisionGroup, this.enemyCollisionGroup]);
+      enemy2.body.velocity.x = parseInt('-'+enemy2Data.velocity);
+    }
   },
-  playerHit: function(player, obstacle) {
-    if (this.playerVisible && this.shield > 0) {
-      this.shield -= obstacle.damage;
-      this.refreshStats();
+  generateProjectiles: function() {
+    var bullet, missile1;
+    this.my_bullets = this.game.add.group();
+    this.enemy_missiles = this.game.add.group();
+    this.explosions = this.game.add.group();
+    
+    for(var i = 0; i < this.NUMBER_OF_BULLETS; i++) {
+      bullet = this.game.add.sprite(0, 0, this.currentWeapon);
+      this.my_bullets.add(bullet);
+      bullet.anchor.setTo(0.5, 0.5);
+      this.game.physics.p2.enable(bullet, true);
+      bullet.kill();
+    }
+    for(var i = 0; i < this.NUMBER_OF_BULLETS; i++) {
+      missile1 = this.game.add.sprite(0, 0, 'missile1');
+      this.enemy_missiles.add(missile1);
+      missile1.anchor.setTo(0.5, 0.5);
+      this.game.physics.p2.enable(missile1, true);
+      missile1.kill();
+    }
+  },
+  shoot: function(){
+    if (this.lastBulletShotAt === undefined) this.lastBulletShotAt = 0;
+    if (this.game.time.now - this.lastBulletShotAt < this.SHOT_DELAY) return;
+    this.lastBulletShotAt = this.game.time.now;
+    var bullet = this.my_bullets.getFirstDead();
+    if (bullet === null || bullet === undefined) return;
+    bullet.revive();
+    bullet.checkWorldBounds = true;
+    bullet.outOfBoundsKill = true;
+    // Set the bullet position to the player position.
+    bullet.reset(this.player.body.x, this.player.body.y);
+    //bullet.rotation = this.player.body.rotation;
+    // Shoot it in the right direction
+    //bullet.body.velocity.x = Math.cos(bullet.rotation) * this.BULLET_SPEED;
+    //bullet.body.velocity.y = Math.sin(bullet.rotation) * this.BULLET_SPEED;
+    bullet.body.velocity.x = this.weaponData.velocity;
+  },
+  playerHit: function(body1, body2) {
+    var obstacle = body2.sprite;
+    var obstacleData = this.cache.getJSON('game_data')[obstacle.key];
+    this.player.body.velocity.x = 0;
+    this.player.body.velocity.y = 0;
+
+    if (this.PLAYER_VISIBILE && this.shield > 0) {
+      this.shield -= obstacleData.damage;
     }
     if (this.shield <= 0) {
-      this.playerDied(player.key + ' killed by ' + obstacle.key);
+      this.refreshStats();
+      this.playerDied('You were killed by ' + obstacle.key);
+    } else {
+      this.refreshStats();
     }
+    obstacle.kill();
   },
-  enemyHit: function(enemy, projectile) {
-    this.points += enemy.worth*this.playerData.multiplier;
-    this.refreshStats();
+  enemyHit: function(body1, body2) {
+    // this.points += enemy.worth*this.playerData.multiplier;
+    // this.refreshStats();
   },
   refreshStats: function() {
     var maxHealth = this.playerData.shield,
@@ -129,15 +180,14 @@ PhaserGame.Game.prototype = {
     this.healthbar.crop(cropRect);
   },
   playerDied: function(txt) {
-    this.gameOver = true;
-    this.gameOverLabel = this.game.add.text(this.game.width / 2 , this.game.height / 2, txt + "\n Your Score: " + this.points,
+    this.GAME_OVER = true;
+    this.player.body.velocity.x = 0;
+    this.player.body.velocity.y = 0;
+    this.GAME_OVERLabel = this.game.add.text(this.game.width / 2 , this.game.height / 2, txt + "\n Your Score: " + this.points,
       { font: '24px Lucida Console', fill: '#fff', align: 'center'});
-    this.gameOverLabel.anchor.setTo(0.5, 0.5);
+    this.GAME_OVERLabel.anchor.setTo(0.5, 0.5);
     //this.restartButton = this.game.add.button(this.game.world.centerX - 95, this.game.world.centerY - 150, 'button', this.restart, this);
     //this.restartButton.onInputUp.add(this.restart, this);
-  },
-  togglePause: function() {
-    this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
   },
   playerMove: function() {
     var w = this.playerData.width/2;
@@ -171,18 +221,18 @@ PhaserGame.Game.prototype = {
     }
   },
   update: function() {
-    if (this.gameOver) {
+    if (this.GAME_OVER) {
       return;
     }
     if (this.shield <= 0) {
-      this.gameOver = true;
-      this.player.body.velocity.setTo(0,0);
+      this.GAME_OVER = true;
+      this.player.body.velocity.x = 0;
+      this.player.body.velocity.y = 0;
       this.playerDied('shield depleated');
       return;
     }
     this.playerMove();
     this.enemies.filter(function(v) { return v.body.x < -70; }).callAll('destroy');
-
     var enemyId = this.cache.getJSON('game_data').enemies[this.game.rnd.integerInRange(0, this.cache.getJSON('game_data').enemies.length - 1)];
     var enemyData = this.cache.getJSON('game_data')[enemyId];
     var x, y, i;
@@ -191,11 +241,9 @@ PhaserGame.Game.prototype = {
       y = this.game.rnd.integerInRange(0, this.game.height-enemyData.height);
       var enemy = this.enemies.create(x, y, enemyId);
       enemy.body.clearShapes();
-      enemy.body.immovable = true;
       enemy.body.setZeroDamping();
+      enemy.body.fixedRotation = true;
       enemy.body.loadPolygon('physics_data', enemyId);
-      enemy.worth = enemyData.worth;
-      enemy.damange = enemyData.damage;
       enemy.body.setCollisionGroup(this.enemyCollisionGroup);
       enemy.body.collides([this.playerCollisionGroup, this.enemyCollisionGroup]);
       enemy.body.velocity.x = parseInt('-'+enemyData.velocity);
