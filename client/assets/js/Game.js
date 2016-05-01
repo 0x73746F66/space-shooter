@@ -25,6 +25,7 @@ PhaserGame.Game.prototype = {
     //  Create our collision groups. One for the player, one for the enemies
     this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
     this.enemyCollisionGroup = this.game.physics.p2.createCollisionGroup();
+    this.obstacleCollisionGroup = this.game.physics.p2.createCollisionGroup();
 
     this.createPlayer(playerId);
     //this.generateObstacles();
@@ -59,7 +60,7 @@ PhaserGame.Game.prototype = {
     this.player.body.sprite.alpha = 0.5;
     this.player.anchor.setTo(0.5, 0.5);
     this.player.body.setCollisionGroup(this.playerCollisionGroup);
-    this.player.body.collides(this.enemyCollisionGroup, this.playerHit, this);
+    this.player.body.collides([this.obstacleCollisionGroup, this.enemyCollisionGroup], this.playerHit, this);
     //this.player.body.setZeroDamping();
     this.player.body.fixedRotation = true;
     this.game.world.bringToTop(this.player);
@@ -71,6 +72,12 @@ PhaserGame.Game.prototype = {
     var barHeight = 30;
     var cropRect = new Phaser.Rectangle(0, 0, barWidth, barHeight);
     this.healthbar.crop(cropRect);
+  },
+  generateObstacles: function(){
+    this.obstacles = this.game.add.group();
+    //enable physics in them
+    this.obstacles.enableBody = true;
+    this.obstacles.physicsBodyType = Phaser.Physics.P2JS;
   },
   generateEnemies: function() {
     var num1 = this.game.rnd.integerInRange(2, 4);
@@ -94,7 +101,7 @@ PhaserGame.Game.prototype = {
       enemy1.body.fixedRotation = true;
       enemy1.body.loadPolygon('physics_data', 'enemy1');
       enemy1.body.setCollisionGroup(this.enemyCollisionGroup);
-      enemy1.body.collides([this.playerCollisionGroup, this.enemyCollisionGroup]);
+      enemy1.body.collides([this.playerCollisionGroup, this.obstacleCollisionGroup, this.enemyCollisionGroup], this.obstaclesHit, this);
       enemy1.body.velocity.x = parseInt('-'+enemy1Data.velocity);
     }
     for (i = 0; i < num2; i++) {
@@ -106,7 +113,7 @@ PhaserGame.Game.prototype = {
       enemy2.body.fixedRotation = true;
       enemy2.body.loadPolygon('physics_data', 'enemy2');
       enemy2.body.setCollisionGroup(this.enemyCollisionGroup);
-      enemy2.body.collides([this.playerCollisionGroup, this.enemyCollisionGroup]);
+      enemy2.body.collides([this.playerCollisionGroup, this.obstacleCollisionGroup, this.enemyCollisionGroup], this.obstaclesHit, this);
       enemy2.body.velocity.x = parseInt('-'+enemy2Data.velocity);
     }
   },
@@ -165,6 +172,15 @@ PhaserGame.Game.prototype = {
     }
     obstacle.kill();
   },
+  obstaclesHit: function(body1, body2) {
+    if (body1.sprite.key.indexOf('fighter') !== -1 || body2.sprite.key.indexOf('fighter') !== -1) {
+      return;
+    }
+    body1.sprite.body.velocity.x = 0;
+    body1.sprite.body.velocity.y = 0;
+    body2.sprite.body.velocity.x = 0;
+    body2.sprite.body.velocity.y = 0;
+  },
   enemyHit: function(body1, body2) {
     // this.points += enemy.worth*this.playerData.multiplier;
     // this.refreshStats();
@@ -183,9 +199,9 @@ PhaserGame.Game.prototype = {
     this.GAME_OVER = true;
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
-    this.GAME_OVERLabel = this.game.add.text(this.game.width / 2 , this.game.height / 2, txt + "\n Your Score: " + this.points,
+    this.gameOverLabel = this.game.add.text(this.game.width / 2 , this.game.height / 2, txt + "\n Your Score: " + this.points,
       { font: '24px Lucida Console', fill: '#fff', align: 'center'});
-    this.GAME_OVERLabel.anchor.setTo(0.5, 0.5);
+    this.gameOverLabel.anchor.setTo(0.5, 0.5);
     //this.restartButton = this.game.add.button(this.game.world.centerX - 95, this.game.world.centerY - 150, 'button', this.restart, this);
     //this.restartButton.onInputUp.add(this.restart, this);
   },
@@ -195,7 +211,7 @@ PhaserGame.Game.prototype = {
     var xBound = [w,this.game.width-w];
     var yBound = [h,this.game.height-h];
     var isMoving = !(Phaser.Point.equals(this.player.body.velocity,new Phaser.Point(0,0)));
-    var isOOBU = this.player.body.y <= xBound[0];
+    var isOOBU = this.player.body.y <= yBound[0];
     var isOOBR = this.player.body.x >= xBound[1];
     var isOOBD = this.player.body.y >= yBound[1];
     var isOOBL = this.player.body.x <= xBound[0];
@@ -220,6 +236,37 @@ PhaserGame.Game.prototype = {
       this.player.body.velocity.y = y;
     }
   },
+  enemyMove: function(enemy, enemyData) {
+    var isMoving = !(Phaser.Point.equals(enemy.body.velocity,new Phaser.Point(0,0)));
+    var isOOBU = enemy.body.y <= enemyData.height/2;
+    var isOOBD = enemy.body.y >= (this.game.height-enemyData.height/2);
+    var isOOBL = enemy.body.x <= enemyData.width/2;
+    var isOOB = (isOOBU || isOOBD || isOOBL);
+    var x = 0, y = 0;
+    
+    if (isMoving && isOOB) {
+      enemy.body.setZeroVelocity();
+    }
+    if (isOOBL) {
+      enemy.destroy();
+      return;
+    } else if ((!isOOB || (!isMoving && isOOB)) && (!isMoving || this.game.rnd.integerInRange(0, 1000) >= 995)) {
+      var xx = [0, parseInt('-'+Math.min(enemyData.velocity, this.game.rnd.integerInRange(0, enemyData.velocity)))];
+      var yy = [parseInt('-'+Math.min(enemyData.velocity, this.game.rnd.integerInRange(0, enemyData.velocity))), 0, Math.min(enemyData.velocity, this.game.rnd.integerInRange(0, enemyData.velocity))];
+      x = xx[this.game.rnd.integerInRange(0, 1)];
+      y = yy[this.game.rnd.integerInRange(0, 2)];
+    }
+    if (enemy.body.velocity.x > enemyData.velocity) {
+      enemy.body.velocity.x = enemyData.velocity;
+    } else if (enemy.body.velocity.y > enemyData.velocity) {
+      enemy.body.velocity.y = enemyData.velocity;
+    }
+    
+    if (x !== 0 || y !== 0) {
+      enemy.body.velocity.x = x;
+      enemy.body.velocity.y = y;
+    }
+  },
   update: function() {
     if (this.GAME_OVER) {
       return;
@@ -231,21 +278,25 @@ PhaserGame.Game.prototype = {
       this.playerDied('shield depleated');
       return;
     }
+    var that = this;
     this.playerMove();
     this.enemies.filter(function(v) { return v.body.x < -70; }).callAll('destroy');
+    this.enemies.forEach(function(enemy) {
+      that.enemyMove(enemy, that.cache.getJSON('game_data')[enemy.key]);
+    });
     var enemyId = this.cache.getJSON('game_data').enemies[this.game.rnd.integerInRange(0, this.cache.getJSON('game_data').enemies.length - 1)];
     var enemyData = this.cache.getJSON('game_data')[enemyId];
-    var x, y, i;
-    if (this.game.rnd.integerInRange(0, 1000) >= 995) {
-      x = (this.game.width) + this.game.rnd.integerInRange(0, this.game.width);
-      y = this.game.rnd.integerInRange(0, this.game.height-enemyData.height);
+    var spawn = this.game.rnd.integerInRange(0, 1000) >= 995;
+    if (spawn) {
+      var x = (this.game.width);// + this.game.rnd.integerInRange(0, this.game.width);
+      var y = this.game.rnd.integerInRange(0, this.game.height-enemyData.height);
       var enemy = this.enemies.create(x, y, enemyId);
       enemy.body.clearShapes();
       enemy.body.setZeroDamping();
       enemy.body.fixedRotation = true;
       enemy.body.loadPolygon('physics_data', enemyId);
       enemy.body.setCollisionGroup(this.enemyCollisionGroup);
-      enemy.body.collides([this.playerCollisionGroup, this.enemyCollisionGroup]);
+      enemy.body.collides([this.playerCollisionGroup, this.obstacleCollisionGroup, this.enemyCollisionGroup], this.obstaclesHit, this);
       enemy.body.velocity.x = parseInt('-'+enemyData.velocity);
     }
   },
