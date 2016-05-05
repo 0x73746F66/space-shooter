@@ -6,6 +6,7 @@ PhaserGame.Game.prototype = {
     this.PLAYER_VISIBILE = true;
     this.MAX_PROJECTILES = 20;
     this.SHOT_DELAY = 300;
+    this.NUMBER_OF_BULLETS = 10;
   },
   create: function() {
     var playerId = this.cache.getJSON('game_data').player;
@@ -15,6 +16,9 @@ PhaserGame.Game.prototype = {
 
     //move player with cursor keys
     this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.Spacebar = this.game.input.keyboard.addKey(32);
+    this.Spacebar.onDown.add(this.shoot, this);
+
     //Turn on impact events for the world, without this we get no collision callbacks
     this.game.physics.p2.setImpactEvents(true);
     this.game.physics.p2.restitution = 0.8;
@@ -26,6 +30,7 @@ PhaserGame.Game.prototype = {
     this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
     this.enemyCollisionGroup = this.game.physics.p2.createCollisionGroup();
     this.obstacleCollisionGroup = this.game.physics.p2.createCollisionGroup();
+    this.projectileCollisionGroup = this.game.physics.p2.createCollisionGroup();
 
     this.createPlayer(playerId);
     //this.generateObstacles();
@@ -60,7 +65,9 @@ PhaserGame.Game.prototype = {
     this.player.body.sprite.alpha = 0.5;
     this.player.anchor.setTo(0.5, 0.5);
     this.player.body.setCollisionGroup(this.playerCollisionGroup);
-    this.player.body.collides([this.obstacleCollisionGroup, this.enemyCollisionGroup], this.playerHit, this);
+    this.player.body.collides([this.obstacleCollisionGroup], this.playerHit, this);
+    this.player.body.collides([this.enemyCollisionGroup], this.playerHit, this);
+    this.player.body.collides([this.projectileCollisionGroup], this.playerHit, this);
     //this.player.body.setZeroDamping();
     this.player.body.fixedRotation = true;
     this.game.world.bringToTop(this.player);
@@ -101,7 +108,9 @@ PhaserGame.Game.prototype = {
       enemy1.body.fixedRotation = true;
       enemy1.body.loadPolygon('physics_data', 'enemy1');
       enemy1.body.setCollisionGroup(this.enemyCollisionGroup);
-      enemy1.body.collides([this.playerCollisionGroup, this.obstacleCollisionGroup, this.enemyCollisionGroup], this.obstaclesHit, this);
+      enemy1.body.collides([this.playerCollisionGroup], this.playerHit, this);
+      enemy1.body.collides([this.obstacleCollisionGroup], this.enemiesCollide, this);
+      enemy1.body.collides([this.enemyCollisionGroup], this.enemiesCollide, this);
       enemy1.body.velocity.x = parseInt('-'+enemy1Data.velocity);
     }
     for (i = 0; i < num2; i++) {
@@ -113,14 +122,16 @@ PhaserGame.Game.prototype = {
       enemy2.body.fixedRotation = true;
       enemy2.body.loadPolygon('physics_data', 'enemy2');
       enemy2.body.setCollisionGroup(this.enemyCollisionGroup);
-      enemy2.body.collides([this.playerCollisionGroup, this.obstacleCollisionGroup, this.enemyCollisionGroup], this.obstaclesHit, this);
+      enemy2.body.collides([this.playerCollisionGroup], this.playerHit, this);
+      enemy2.body.collides([this.obstacleCollisionGroup], this.enemiesCollide, this);
+      enemy2.body.collides([this.enemyCollisionGroup], this.enemiesCollide, this);
       enemy2.body.velocity.x = parseInt('-'+enemy2Data.velocity);
     }
   },
   generateProjectiles: function() {
     var bullet, missile1;
     this.my_bullets = this.game.add.group();
-    this.enemy_missiles = this.game.add.group();
+    this.missile1 = this.game.add.group();
     this.explosions = this.game.add.group();
     
     for(var i = 0; i < this.NUMBER_OF_BULLETS; i++) {
@@ -132,9 +143,11 @@ PhaserGame.Game.prototype = {
     }
     for(var i = 0; i < this.NUMBER_OF_BULLETS; i++) {
       missile1 = this.game.add.sprite(0, 0, 'missile1');
-      this.enemy_missiles.add(missile1);
+      this.missile1.add(missile1);
       missile1.anchor.setTo(0.5, 0.5);
       this.game.physics.p2.enable(missile1, true);
+      missile1.body.setCollisionGroup(this.projectileCollisionGroup);
+      missile1.body.collides([this.playerCollisionGroup], this.playerHit, this);
       missile1.kill();
     }
   },
@@ -155,24 +168,34 @@ PhaserGame.Game.prototype = {
     //bullet.body.velocity.y = Math.sin(bullet.rotation) * this.BULLET_SPEED;
     bullet.body.velocity.x = this.weaponData.velocity;
   },
-  playerHit: function(body1, body2) {
-    var obstacle = body2.sprite;
-    var obstacleData = this.cache.getJSON('game_data')[obstacle.key];
-    this.player.body.velocity.x = 0;
-    this.player.body.velocity.y = 0;
-
-    if (this.PLAYER_VISIBILE && this.shield > 0) {
-      this.shield -= obstacleData.damage;
-    }
-    if (this.shield <= 0) {
-      this.refreshStats();
-      this.playerDied('You were killed by ' + obstacle.key);
-    } else {
-      this.refreshStats();
-    }
-    obstacle.kill();
+  enemyShoot: function(enemy, enemyData) {
+    var bullet = this[enemyData.weapon].getFirstDead();
+    if (bullet === null || bullet === undefined) return;
+    bullet.revive();
+    bullet.checkWorldBounds = true;
+    bullet.outOfBoundsKill = true;
+    // Set the bullet position to the enemy position.
+    bullet.reset(enemy.body.x, enemy.body.y);
+    bullet.body.velocity.x = parseInt('-' + this.cache.getJSON('game_data')[enemyData.weapon].velocity);
   },
-  obstaclesHit: function(body1, body2) {
+  playerHit: function(body1, body2) {
+    if (body1.sprite.key.indexOf('fighter') !== -1 || body2.sprite.key.indexOf('fighter') !== -1) {
+      var obstacle = (body1.sprite.key.indexOf('fighter') !== -1 ? body2.sprite : body1.sprite);
+      var obstacleData = this.cache.getJSON('game_data')[obstacle['key']];
+      this.player.body.velocity.x = 0;
+      this.player.body.velocity.y = 0;
+  
+      if (this.PLAYER_VISIBILE && this.shield > 0) {
+        this.shield -= obstacleData.damage;
+      }
+      this.refreshStats();
+      if (this.shield <= 0) {
+        this.playerDied('You were killed by ' + obstacle.key);
+      }
+      obstacle.kill();
+    }
+  },
+  enemiesCollide: function(body1, body2) {
     if (body1.sprite.key.indexOf('fighter') !== -1 || body2.sprite.key.indexOf('fighter') !== -1) {
       return;
     }
@@ -281,8 +304,16 @@ PhaserGame.Game.prototype = {
     var that = this;
     this.playerMove();
     this.enemies.filter(function(v) { return v.body.x < -70; }).callAll('destroy');
-    this.enemies.forEach(function(enemy) {
-      that.enemyMove(enemy, that.cache.getJSON('game_data')[enemy.key]);
+    this.enemies.forEachAlive(function(enemy) {
+      var enemyData = that.cache.getJSON('game_data')[enemy.key];
+      that.enemyMove(enemy, enemyData);
+      var shoot = that.game.rnd.integerInRange(0, 1000) >= 995;
+      if (shoot) {
+        that.enemyShoot(enemy, enemyData);
+      }
+    });
+    this.missile1.forEachAlive(function(missile) {
+      missile.body.velocity.x = parseInt('-' + that.cache.getJSON('game_data')[missile.key].velocity);
     });
     var enemyId = this.cache.getJSON('game_data').enemies[this.game.rnd.integerInRange(0, this.cache.getJSON('game_data').enemies.length - 1)];
     var enemyData = this.cache.getJSON('game_data')[enemyId];

@@ -28,6 +28,7 @@
     "worth": 1,
     "damage": 9999999,
     "atk": 10,
+    "weapon": "missile1",
     "width": 40,
     "height": 37
   },
@@ -36,6 +37,7 @@
     "worth": 2,
     "damage": 9999999,
     "atk": 25,
+    "weapon": "missile1",
     "width": 53,
     "height": 30
   },
@@ -72,10 +74,10 @@
   },
   "bullet1": {
     "velocity": 300,
-    "damage": 5
+    "damage": 50
   },
   "missile1": {
     "velocity": 200,
-    "damage": 5
+    "damage": 50
   }
 }
