@@ -73,8 +73,7 @@
     "damage": 450
   },
   "bullet1": {
-    "velocity": 300,
-    "damage": 50
+    "velocity": 600
   },
   "missile1": {
     "velocity": 200,

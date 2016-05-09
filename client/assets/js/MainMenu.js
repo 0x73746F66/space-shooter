@@ -1,7 +1,7 @@
 PhaserGame.MainMenu = function(){};
 PhaserGame.MainMenu.prototype = {
   preload: function() {
-    this.highestScore = 96240385; //fetch from db
+    this.highestScore = store('highScore')||0;
   },
   create: function() {
     this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'space');

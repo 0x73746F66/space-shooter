@@ -7,6 +7,7 @@ PhaserGame.Game.prototype = {
     this.MAX_PROJECTILES = 20;
     this.SHOT_DELAY = 300;
     this.NUMBER_OF_BULLETS = 10;
+    this.points = 0;
   },
   create: function() {
     var playerId = this.cache.getJSON('game_data').player;
@@ -31,8 +32,9 @@ PhaserGame.Game.prototype = {
     this.enemyCollisionGroup = this.game.physics.p2.createCollisionGroup();
     this.obstacleCollisionGroup = this.game.physics.p2.createCollisionGroup();
     this.projectileCollisionGroup = this.game.physics.p2.createCollisionGroup();
+    this.weaponCollisionGroup = this.game.physics.p2.createCollisionGroup();
 
-    this.createPlayer(playerId);
+    this.createPlayer(playerId, weaponId);
     //this.generateObstacles();
     this.generateEnemies();
     this.generateProjectiles();
@@ -59,10 +61,10 @@ PhaserGame.Game.prototype = {
     }
     this.player = this.game.add.sprite(x, y, playerId);
     //this.game.physics.arcade.enable(this.player);
-    this.game.physics.p2.enable(this.player, true);
+    this.game.physics.p2.enable(this.player);
     this.player.body.clearShapes();
     this.player.body.loadPolygon('physics_data', playerId);
-    this.player.body.sprite.alpha = 0.5;
+    //this.player.body.sprite.alpha = 0.5;
     this.player.anchor.setTo(0.5, 0.5);
     this.player.body.setCollisionGroup(this.playerCollisionGroup);
     this.player.body.collides([this.obstacleCollisionGroup], this.playerHit, this);
@@ -74,7 +76,7 @@ PhaserGame.Game.prototype = {
     this.PLAYER_VISIBILE = true;
     this.points = 0;
     this.shield = this.playerData.shield;
-
+    this.reduceTo = this.shield
     var barWidth = 400;
     var barHeight = 30;
     var cropRect = new Phaser.Rectangle(0, 0, barWidth, barHeight);
@@ -109,8 +111,9 @@ PhaserGame.Game.prototype = {
       enemy1.body.loadPolygon('physics_data', 'enemy1');
       enemy1.body.setCollisionGroup(this.enemyCollisionGroup);
       enemy1.body.collides([this.playerCollisionGroup], this.playerHit, this);
-      enemy1.body.collides([this.obstacleCollisionGroup], this.enemiesCollide, this);
+      //enemy1.body.collides([this.obstacleCollisionGroup], this.enemiesCollide, this);
       enemy1.body.collides([this.enemyCollisionGroup], this.enemiesCollide, this);
+      enemy1.body.collides([this.weaponCollisionGroup], this.enemyHit, this);
       enemy1.body.velocity.x = parseInt('-'+enemy1Data.velocity);
     }
     for (i = 0; i < num2; i++) {
@@ -123,29 +126,32 @@ PhaserGame.Game.prototype = {
       enemy2.body.loadPolygon('physics_data', 'enemy2');
       enemy2.body.setCollisionGroup(this.enemyCollisionGroup);
       enemy2.body.collides([this.playerCollisionGroup], this.playerHit, this);
-      enemy2.body.collides([this.obstacleCollisionGroup], this.enemiesCollide, this);
+      //enemy2.body.collides([this.obstacleCollisionGroup], this.enemiesCollide, this);
       enemy2.body.collides([this.enemyCollisionGroup], this.enemiesCollide, this);
+      enemy2.body.collides([this.weaponCollisionGroup], this.enemyHit, this);
       enemy2.body.velocity.x = parseInt('-'+enemy2Data.velocity);
     }
   },
   generateProjectiles: function() {
-    var bullet, missile1;
+    var bullet, missile1, i;
     this.my_bullets = this.game.add.group();
     this.missile1 = this.game.add.group();
     this.explosions = this.game.add.group();
     
-    for(var i = 0; i < this.NUMBER_OF_BULLETS; i++) {
+    for(i = 0; i < this.NUMBER_OF_BULLETS; i++) {
       bullet = this.game.add.sprite(0, 0, this.currentWeapon);
       this.my_bullets.add(bullet);
       bullet.anchor.setTo(0.5, 0.5);
-      this.game.physics.p2.enable(bullet, true);
+      this.game.physics.p2.enable(bullet);
+      bullet.body.setCollisionGroup(this.weaponCollisionGroup);
+      bullet.body.collides([this.enemyCollisionGroup], this.enemyHit, this);
       bullet.kill();
     }
-    for(var i = 0; i < this.NUMBER_OF_BULLETS; i++) {
+    for(i = 0; i < this.NUMBER_OF_BULLETS; i++) {
       missile1 = this.game.add.sprite(0, 0, 'missile1');
       this.missile1.add(missile1);
       missile1.anchor.setTo(0.5, 0.5);
-      this.game.physics.p2.enable(missile1, true);
+      this.game.physics.p2.enable(missile1);
       missile1.body.setCollisionGroup(this.projectileCollisionGroup);
       missile1.body.collides([this.playerCollisionGroup], this.playerHit, this);
       missile1.kill();
@@ -158,14 +164,11 @@ PhaserGame.Game.prototype = {
     var bullet = this.my_bullets.getFirstDead();
     if (bullet === null || bullet === undefined) return;
     bullet.revive();
+    bullet.body.angle = 0;
     bullet.checkWorldBounds = true;
     bullet.outOfBoundsKill = true;
     // Set the bullet position to the player position.
-    bullet.reset(this.player.body.x, this.player.body.y);
-    //bullet.rotation = this.player.body.rotation;
-    // Shoot it in the right direction
-    //bullet.body.velocity.x = Math.cos(bullet.rotation) * this.BULLET_SPEED;
-    //bullet.body.velocity.y = Math.sin(bullet.rotation) * this.BULLET_SPEED;
+    bullet.reset(this.player.body.x+20, this.player.body.y);
     bullet.body.velocity.x = this.weaponData.velocity;
   },
   enemyShoot: function(enemy, enemyData) {
@@ -181,19 +184,37 @@ PhaserGame.Game.prototype = {
   playerHit: function(body1, body2) {
     if (body1.sprite.key.indexOf('fighter') !== -1 || body2.sprite.key.indexOf('fighter') !== -1) {
       var obstacle = (body1.sprite.key.indexOf('fighter') !== -1 ? body2.sprite : body1.sprite);
-      var obstacleData = this.cache.getJSON('game_data')[obstacle['key']];
+      var obstacleData = this.cache.getJSON('game_data')[obstacle.key];
       this.player.body.velocity.x = 0;
       this.player.body.velocity.y = 0;
-  
-      if (this.PLAYER_VISIBILE && this.shield > 0) {
-        this.shield -= obstacleData.damage;
+      
+      if (this.PLAYER_VISIBILE && Math.min(this.reduceTo, this.shield) > 0) {
+        this.reduceTo = Math.min(this.reduceTo, this.shield)-obstacleData.damage;
       }
-      this.refreshStats();
-      if (this.shield <= 0) {
+      if (Math.min(this.reduceTo, this.shield) <= 0) {
         this.playerDied('You were killed by ' + obstacle.key);
       }
       obstacle.kill();
     }
+  },
+  enemyHit: function(body1, body2) {
+    var weapon, enemy;
+    if (body1.sprite.key === this.currentWeapon) {
+      weapon = body1.sprite;
+      enemy = body2.sprite;
+    } else {
+      weapon = body2.sprite;
+      enemy = body1.sprite;
+    }
+    if (!weapon || !enemy) {
+      return;
+    }
+    var enemyData = this.cache.getJSON('game_data')[enemy.key];
+    
+    this.points += enemyData.worth;
+    this.pointsText.text = this.points;
+    enemy.destroy();
+    weapon.kill();
   },
   enemiesCollide: function(body1, body2) {
     if (body1.sprite.key.indexOf('fighter') !== -1 || body2.sprite.key.indexOf('fighter') !== -1) {
@@ -204,20 +225,6 @@ PhaserGame.Game.prototype = {
     body2.sprite.body.velocity.x = 0;
     body2.sprite.body.velocity.y = 0;
   },
-  enemyHit: function(body1, body2) {
-    // this.points += enemy.worth*this.playerData.multiplier;
-    // this.refreshStats();
-  },
-  refreshStats: function() {
-    var maxHealth = this.playerData.shield,
-        diff = this.shield/maxHealth,
-        barWidth = 400,
-        barHeight = 30,
-        barRemaining = (barWidth - (barWidth - (barWidth * diff))).toFixed(0);
-    this.pointsText.text = this.points;
-    var cropRect = new Phaser.Rectangle(0, 0, barRemaining, barHeight);
-    this.healthbar.crop(cropRect);
-  },
   playerDied: function(txt) {
     this.GAME_OVER = true;
     this.player.body.velocity.x = 0;
@@ -227,6 +234,9 @@ PhaserGame.Game.prototype = {
     this.gameOverLabel.anchor.setTo(0.5, 0.5);
     //this.restartButton = this.game.add.button(this.game.world.centerX - 95, this.game.world.centerY - 150, 'button', this.restart, this);
     //this.restartButton.onInputUp.add(this.restart, this);
+    if (this.points > this.highestScore) {
+      store('highScore', this.points);
+    }
   },
   playerMove: function() {
     var w = this.playerData.width/2;
@@ -303,6 +313,19 @@ PhaserGame.Game.prototype = {
     }
     var that = this;
     this.playerMove();
+
+    var shieldValue = Math.max(this.shield, this.reduceTo),
+        maxHealth = this.playerData.shield,
+        diff = (--shieldValue)/maxHealth,
+        barWidth = 400,
+        barHeight = 30,
+        barRemaining = (barWidth - (barWidth - (barWidth * diff))).toFixed(0),
+        cropRect = new Phaser.Rectangle(0, 0, barRemaining, barHeight);
+
+    if (shieldValue >= this.reduceTo) {
+      this.shield = shieldValue;
+      this.healthbar.crop(cropRect);
+    }
     this.enemies.filter(function(v) { return v.body.x < -70; }).callAll('destroy');
     this.enemies.forEachAlive(function(enemy) {
       var enemyData = that.cache.getJSON('game_data')[enemy.key];
@@ -327,7 +350,10 @@ PhaserGame.Game.prototype = {
       enemy.body.fixedRotation = true;
       enemy.body.loadPolygon('physics_data', enemyId);
       enemy.body.setCollisionGroup(this.enemyCollisionGroup);
-      enemy.body.collides([this.playerCollisionGroup, this.obstacleCollisionGroup, this.enemyCollisionGroup], this.obstaclesHit, this);
+      enemy.body.collides([this.playerCollisionGroup], this.playerHit, this);
+      //enemy.body.collides([this.obstacleCollisionGroup], this.enemiesCollide, this);
+      enemy.body.collides([this.enemyCollisionGroup], this.enemiesCollide, this);
+      enemy.body.collides([this.weaponCollisionGroup], this.enemyHit, this);
       enemy.body.velocity.x = parseInt('-'+enemyData.velocity);
     }
   },
