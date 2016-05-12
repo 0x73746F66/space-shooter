@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# v0.0.3  //change this value if nothing else to force a browser update
+# v0.0.4  //change this value if nothing else to force a browser update
 
 CACHE:
 index.html
@@ -10,6 +10,9 @@ assets/images/android-icon-96x96.png
 assets/images/android-icon-144x144.png
 assets/images/android-icon-192x192.png
 favicon.ico
+assets/images/favicon-16x16.png
+assets/images/favicon-96x96.png
+assets/images/favicon-32x32.png
 manifest.json
 manifest.webapp
 browserconfig.xml

@@ -3,15 +3,20 @@ var PhaserGame = {cacheReady: false};
 window.addEventListener('load', function(e) {
   window.applicationCache.addEventListener('updateready', function(e) {
     if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-      info("New version available.\nReload AppCache");
+      window.applicationCache.update();
+      window.applicationCache.swapCache();
     }
   }, false);
   window.applicationCache.addEventListener('noupdate', function(e){
-    warn("Loaded from AppCache\nForget to update .appcache file version?");
     PhaserGame.cacheReady = true;
   }, false);
   window.applicationCache.addEventListener('cached', function(e){
     PhaserGame.cacheReady = true;
+  }, false);
+  window.applicationCache.addEventListener('error', function(e){
+    if (e.reason === 'manifest') {
+      PhaserGame.cacheReady = true;
+    }
   }, false);
 }, false);
 document.addEventListener("DOMContentLoaded", function(e) {
