@@ -1,0 +1,13 @@
+version: '2.1'
+services:
+  game:
+    container_name: game
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+        NODE_ENV: prod
+    volumes:
+      - ./:/usr/src/app/
+    ports:
+      - "8080:8080"
